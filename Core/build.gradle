@@ -1,0 +1,42 @@
+apply plugin: 'java'
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.android.apk2jar.Apk2JarFormat'
+    }
+}
+
+// 指定jar包名称
+archivesBaseName = JAR_NAME
+// 指定jar包版本号
+version = getVersion()
+
+def getVersion() {
+    return VERSION_NAME/* + "-" + new Date().format('yyyyMMdd')*/
+}
+
+// 把jar包复制到目标目录
+task buildJar(type: Copy, dependsOn: [build, jar]) {
+    from('build/libs') { // 复制jar包
+        include '*.jar'
+    }
+    into ('release/' + getVersion())
+    from('./') { // 复制properties
+        include 'apk2jar-fromat.properties'
+    }
+    into ('release/' + getVersion())
+}
+
+// 把jar包复制到目标目录
+task buildAndCopyJar(type: Copy, dependsOn: [buildJar]) {
+    from('release/' + getVersion()) {
+        include '*.*'
+    }
+    into ('../DemoLib/buildtool')
+}
