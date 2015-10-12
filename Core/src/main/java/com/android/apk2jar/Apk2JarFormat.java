@@ -40,11 +40,9 @@ public class Apk2JarFormat {
 
     public static void main(String[] args) throws Exception {
         PROPERTIES = new Properties();
-        System.out.println("current dir: " + new File("./").getAbsolutePath());
-        File file = new File("./", PROPERTIES_FILE); // 执行shell脚本时所在的目录
-        if (!file.exists()) { // 在DemoLib中运行时的目录
-            file = new File("./buildtool", PROPERTIES_FILE);
-        }
+        String dir = Apk2JarFormat.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        File file = new File(new File(dir).getParentFile(), PROPERTIES_FILE); // 执行shell脚本时所在的目录
+        System.out.println("current dir: " + file);
         if (!file.exists()) { // 在gradle中调试时的目录
             file = new File("./Core", PROPERTIES_FILE);
         }
