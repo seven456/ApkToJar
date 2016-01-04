@@ -8,7 +8,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.android.apk2jar.Apk2JarFormat'
+        attributes 'Main-Class': 'com.android.apkToJar.ApkToJarFormat'
     }
 }
 
@@ -28,7 +28,7 @@ task buildJar(type: Copy, dependsOn: [build, jar]) {
     }
     into ('release/' + getVersion())
     from('./') { // 复制properties
-        include 'apk2jar-fromat.properties'
+        include 'apkToJar-fromat.properties'
     }
     into ('release/' + getVersion())
 }
@@ -38,5 +38,5 @@ task buildAndCopyJar(type: Copy, dependsOn: [buildJar]) {
     from('release/' + getVersion()) {
         include '*.*'
     }
-    into ('../DemoLib/buildtool')
+    into ('../DemoLib/buildTool')
 }

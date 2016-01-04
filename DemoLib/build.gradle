@@ -24,5 +24,5 @@ dependencies {
 
 // 构建Android项目到jar包
 task buildJar() << {
-    javaexec { main = "-jar"; args "./buildtool/apk2jar-fromat-1.0.jar" }
+    javaexec { main = "-jar"; args "./buildtool/apkToJar-fromat-1.1.jar" }
 }

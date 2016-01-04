@@ -1,4 +1,4 @@
-package com.android.apk2jar;
+package com.android.apkToJar;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,14 +13,13 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Apk2JarFormat {
-    private static final String PROPERTIES_FILE = "apk2jar-fromat.properties";
+public class ApkToJarFormat {
+    private static final String PROPERTIES_FILE = "apkToJar-fromat.properties";
     private static final String ANDROID_SDK = "android.sdk";
     private static final String ANDROID_TARGET = "android.target";
 
@@ -40,7 +39,7 @@ public class Apk2JarFormat {
 
     public static void main(String[] args) throws Exception {
         PROPERTIES = new Properties();
-        String dir = Apk2JarFormat.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String dir = ApkToJarFormat.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         File file = new File(new File(dir).getParentFile(), PROPERTIES_FILE); // 执行shell脚本时所在的目录
         System.out.println("current dir: " + file);
         if (!file.exists()) { // 在gradle中调试时的目录
@@ -153,8 +152,8 @@ public class Apk2JarFormat {
         String assets = PROPERTIES.getProperty(INPUT_DIR_ASSETS);
         String androidManifest = PROPERTIES.getProperty(INPUT_DIR_ANDROIDMANIFEST);
         String outApk = tempDir + File.separator + "temp.apk";
-        String shell = String.format("\"%1$s\" package -f -I \"%2$s\" -S \"%3$s\" -A \"%4$s\" -M \"%5$s\" -F \"%6$s\"", aapt, androidJar, res, assets,
-                androidManifest, outApk); // 对layout和drawable资源进行编码；
+        String shellAssets = new File(assets).exists() ? "\" -A \"" + assets : "";
+        String shell = "\"" + aapt + "\" package -f -I \"" + androidJar + "\" -S \"" + res + shellAssets + "\" -M \"" + androidManifest + "\" -F \"" + outApk + "\"";
         exec(shell);
 
         System.out.println("[解压layout和drawable资源]");
@@ -162,9 +161,9 @@ public class Apk2JarFormat {
         final String outPreJar = tempDir + File.separator + "prejar";
         new File(outPreJar).mkdirs();
         String jar = javaSdk + File.separator + "jar";
-        shell = String.format("cmd /c cd \"%1$s\" && \"%2$s\" -xvf \"%3$s\"", outPreJar, jar, outApk);
+        shell = "cmd /c cd \"" + outPreJar + "\" && \"" + jar + "\" -xvf \"" + outApk + "\"";
         exec(shell);
-        shell = String.format("cmd /c cd \"%1$s\" && move res/drawable-xhdpi-v4 res/drawable-xhdpi", outPreJar);
+        shell = "cmd /c cd \"" + outPreJar + "\" && move res/drawable-xhdpi-v4 res/drawable-xhdpi";
         exec(shell);
 
         System.out.println("[编译java文件]");
@@ -197,8 +196,7 @@ public class Apk2JarFormat {
             }
         });
         String javac = javaSdk + File.separator + "javac";
-        shell = String.format("\"%1$s\" -verbose -encoding UTF-8 -classpath \"%2$s\" %3$s -d \"%4$s\"", javac, classpath.toString(), sources.toString(),
-                outPreJar);
+        shell = "\"" + javac + "\" -verbose -encoding UTF-8 -classpath \"" + classpath.toString() + "\" " + sources.toString() + " -d \"" + outPreJar + "\"";
         sources.setLength(0);
         exec(shell);
 
@@ -214,7 +212,7 @@ public class Apk2JarFormat {
             }
         });
         String jarFinal = outputDir + File.separator + PROPERTIES.getProperty(OUTPUT_JAR);
-        shell = String.format("cmd /c cd \"%1$s\" && \"%2$s\" -cvf  \"%3$s\" %4$s", outPreJar, jar, jarFinal, classes.toString());
+        shell = "cmd /c cd \"" + outPreJar + "\" && \"" + jar + "\" -cvf  \"" + jarFinal + "\" " + classes.toString();
         classes.setLength(0);
         exec(shell);
 
@@ -225,6 +223,7 @@ public class Apk2JarFormat {
     }
 
     private static void exec(final String shell) {
+        System.out.println("[执行命令：" + shell + "]");
         try {
             Process process = Runtime.getRuntime().exec(shell);
             BufferedReader br = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -331,7 +330,7 @@ public class Apk2JarFormat {
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                 String findJava = androidSdk + File.separator + "tools" + File.separator + "lib" + File.separator
                         + (System.getProperty("os.arch").contains("64") ? "find_java64" : "find_java32");
-                String shell = String.format("\"%1$s\"", findJava);
+                String shell = "\"" + findJava + "\"";
                 reslut = execAndGet(shell);
             } else if (System.getProperty("os.name").toLowerCase().contains("linux")) {
                 // TODO

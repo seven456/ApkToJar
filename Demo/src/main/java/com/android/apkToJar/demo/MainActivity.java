@@ -1,9 +1,9 @@
-package com.android.apk2jar.demo;
+package com.android.apkToJar.demo;
 
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.android.apk2jar.demolib.UIManager;
+import com.android.apkToJar.demoLib.UIManager;
 
 public class MainActivity extends Activity {
 
@@ -13,7 +13,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
 
-//        ViewGroup view = (ViewGroup) Apk2Jar.getView(this, R2.layout.apk2jar_activity_main);
+//        ViewGroup view = (ViewGroup) ApkToJar.getView(this, R2.layout.apktojar_activity_main);
 //        setContentView(view);
 
         UIManager.getInstance().showMain(this);

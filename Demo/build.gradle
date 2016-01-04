@@ -5,7 +5,7 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.android.apk2jar.demo"
+        applicationId "com.android.apkToJar.demo"
         minSdkVersion 10
         targetSdkVersion 22
         versionCode 1
